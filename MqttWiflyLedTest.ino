@@ -9,12 +9,15 @@
 #include <MemoryFree.h>
 
 
-#if DEBUG
-void debug(const __FlashStringHelper * console_text)
-{
-  Serial.println(console_text);
-}
-#endif
+//#if DEBUG
+//void debug(const __FlashStringHelper * console_text)
+//{
+//  Serial.println(console_text);
+//}
+//#endif
+
+
+#include <PubSubClient.h>
 
 
 // callback function definition required here as client needs to be defined before
@@ -62,22 +65,18 @@ void callback(char* topic, uint8_t* payload, unsigned int payload_length)
    	  length = the length of the payload, until which index of payload
   */
 
-#if DEBUG
-  debug(F("Payload length is"));
-  Serial.println(payload_length);
-#endif
+DEBUG_LOG(1, "Payload length is");
+//DEBUG_LOG(1, payload_length);
 
   // Copy the payload to the new buffer
   char* message = (char*)malloc((sizeof(char) * payload_length) + 1); // get the size of the bytes and store in memory
   memcpy(message, payload, payload_length * sizeof(char));        // copy the memory
   message[payload_length * sizeof(char)] = '\0';                  // add terminating character
 
-#if DEBUG
-  debug(F("Message with topic"));
-  Serial.println(topic);
-  debug(F("arrived with payload"));
-  Serial.println(message);
-#endif
+  DEBUG_LOG(1, "Message with topic");
+//  DEBUG_LOG(1, topic);
+  DEBUG_LOG(1, "arrived with payload");
+//  DEBUG_LOG(1, message);
 
   byte topic_idx = 0;
   // find if topic is matched
@@ -89,23 +88,17 @@ void callback(char* topic, uint8_t* payload, unsigned int payload_length)
       break;
     }
   }
-#if DEBUG
-  debug(F("Control topic index"));
-  Serial.println(topic_idx);
-#endif
+  DEBUG_LOG(1, "Control topic index");
+//  DEBUG_LOG(1, topic_idx);
 
   if (topic_idx == 0) {  // topic is UPTIME_REQUEST
     publish_uptime();
-#if DEBUG
-    debug(F("UPTIME_REQUEST topic arrived"));
-    Serial.println(millis());
-#endif
+    DEBUG_LOG(1, "UPTIME_REQUEST topic arrived");
+//    DEBUG_LOG(1, (char) millis());
   } else if (topic_idx == 1) {  // topic is MEMORY_REQUEST
     publish_memory();
-#if DEBUG
-    debug(F("MEMORY_REQUEST topic arrived"));
-    Serial.println(freeMemory());
-#endif
+    DEBUG_LOG(1, "MEMORY_REQUEST topic arrived");
+//    DEBUG_LOG(1, (char) freeMemory());
   } else if (topic_idx == 2) {  // LED_CONTROL
     byte integer = atoi(message);    // parse to int (will return 0 if not a valid int)
     if (integer == 1 && ledIsOff()) {
@@ -121,29 +114,21 @@ void callback(char* topic, uint8_t* payload, unsigned int payload_length)
 
 void wifly_connect()
 {
-#if DEBUG
-  debug(F("initialising wifly"));
-#endif
+  DEBUG_LOG(1, "initialising wifly");
 
   WiFly.begin();
   delay(5000);  // allow time to WiFly to initialise
 
-#if DEBUG
-  debug(F("joining network"));
-#endif
+  DEBUG_LOG(1, "joining network");
 
-  //  if (!WiFly.join(MY_SSID, MY_PASSPHRASE, mode)) {
-  if (!WiFly.join(MY_SSID)) {   // needs to be fixed to allow a passphrase if secure
+  if (!WiFly.join(MY_SSID, MY_PASSPHRASE, mode)) {
+//  if (!WiFly.join(MY_SSID)) {   // needs to be fixed to allow a passphrase if secure
     wifly_connected = false;
-#if DEBUG
-    debug(F("  failed"));
-#endif
+    DEBUG_LOG(1, "  failed");
     delay(AFTER_ERROR_DELAY);
   } else {
     wifly_connected = true;
-#if DEBUG
-    debug(F("  connected"));
-#endif
+    DEBUG_LOG(1, "  connected");
   }
 }
 
@@ -155,25 +140,18 @@ void mqtt_connect()
   if (wifly_connected) {
     // MQTT client setup
     //    mqttClient.disconnect();
-#if DEBUG
-    debug(F("connecting to broker"));
-#endif
+    DEBUG_LOG(1, "connecting to broker");
     if (mqtt_client.connect(mqtt_client_id)) {
-#if DEBUG
-      debug(F("  connected"));
-#endif
+      DEBUG_LOG(1, "  connected");
       publish_connected();
 #if USE_FREEMEM
       publish_memory();
 #endif
-
       // subscribe to topics
       mqtt_client.subscribe("relayduino/request/#");
       mqtt_client.subscribe("relayduino/control/#");
     } else {
-#if DEBUG
-      debug(F("  failed"));
-#endif
+      DEBUG_LOG(1, "  failed");
       delay(AFTER_ERROR_DELAY);
     }
   }
@@ -205,10 +183,10 @@ void setup()
   ResetWatchdog1();
 #endif
 
-#if DEBUG
-  Serial.println(WiFly.ip());
+//#if DEBUG
+  //Serial.println(WiFly.ip());
   //  Serial.println(WiFly.getMAC());
-#endif
+//#endif
 
   pinMode(LED_PIN, OUTPUT);
 }

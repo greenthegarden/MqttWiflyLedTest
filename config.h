@@ -2,7 +2,11 @@
 #define MQTTWIFLYRELAYDUINO_CONFIG_H_
 
 
-#define DEBUG                       false
+#define DEBUG                       true
+
+#if DEBUG
+#include "Debug.h"
+#endif
 
 
 // Macros
@@ -29,12 +33,12 @@ byte ledIsOff()
   return 0;
 }
 
-byte setLedOn()
+void setLedOn()
 {
   digitalWrite(LED_PIN, HIGH);
 }
 
-byte setLedOff()
+void setLedOff()
 {
   digitalWrite(LED_PIN, LOW);
 }
