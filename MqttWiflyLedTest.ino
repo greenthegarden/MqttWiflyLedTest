@@ -66,7 +66,7 @@ void callback(char* topic, uint8_t* payload, unsigned int payload_length)
   */
 
 DEBUG_LOG(1, "Payload length is");
-//DEBUG_LOG(1, payload_length);
+DEBUG_LOG(3, payload_length);
 
   // Copy the payload to the new buffer
   char* message = (char*)malloc((sizeof(char) * payload_length) + 1); // get the size of the bytes and store in memory
@@ -74,9 +74,9 @@ DEBUG_LOG(1, "Payload length is");
   message[payload_length * sizeof(char)] = '\0';                  // add terminating character
 
   DEBUG_LOG(1, "Message with topic");
-//  DEBUG_LOG(1, topic);
+  DEBUG_LOG(1, topic);
   DEBUG_LOG(1, "arrived with payload");
-//  DEBUG_LOG(1, message);
+  DEBUG_LOG(1, message);
 
   byte topic_idx = 0;
   // find if topic is matched
