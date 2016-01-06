@@ -66,7 +66,7 @@ void callback(char* topic, uint8_t* payload, unsigned int payload_length)
   */
 
 DEBUG_LOG(1, "Payload length is");
-DEBUG_LOG(3, payload_length);
+DEBUG_LOG(1, payload_length);
 
   // Copy the payload to the new buffer
   char* message = (char*)malloc((sizeof(char) * payload_length) + 1); // get the size of the bytes and store in memory
@@ -121,8 +121,8 @@ void wifly_connect()
 
   DEBUG_LOG(1, "joining network");
 
-  if (!WiFly.join(MY_SSID, MY_PASSPHRASE, mode)) {
-//  if (!WiFly.join(MY_SSID)) {   // needs to be fixed to allow a passphrase if secure
+//  if (!WiFly.join(MY_SSID, MY_PASSPHRASE, mode)) {
+  if (!WiFly.join(MY_SSID)) {   // needs to be fixed to allow a passphrase if secure
     wifly_connected = false;
     DEBUG_LOG(1, "  failed");
     delay(AFTER_ERROR_DELAY);
